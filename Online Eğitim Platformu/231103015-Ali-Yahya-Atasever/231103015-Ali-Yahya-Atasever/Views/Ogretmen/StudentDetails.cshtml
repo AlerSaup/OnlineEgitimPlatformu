@@ -1,0 +1,49 @@
+﻿
+
+@using _231103015_Ali_Yahya_Atasever.ViewModels
+@model StudentDetailViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Öğrenci Video İzleme Detayları";
+}
+
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/ogrencibilgi.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="container">
+        <h2>@Model.Student.OkulNo @Model.Student.Ad @Model.Student.Soyad - Video İzleme Detayları</h2>
+
+        <div class="table-container">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Video Başlığı</th>
+                        <th>İzlenme Oranı (%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Videos)
+                    {
+                        <tr>
+                            <td>@item.Video.Videotitle</td>
+                            <td>% @item.Izlenmemiktari</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <a asp-controller="Ogretmen" asp-action="Index" class="back-button">
+            Geri Dön
+        </a>
+    </div>
+</body>
+</html>

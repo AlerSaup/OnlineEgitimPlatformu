@@ -1,0 +1,43 @@
+﻿@model _231103015_Ali_Yahya_Atasever.DAL.Category
+
+@{
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Detaylar</title>
+</head>
+<body>
+
+<div>
+    <h4>Kategori</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Bolum)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Bolum.Id)
+        </dd>
+    </dl>
+</div>
+<div>
+        <a asp-action="Edit" asp-route-id="@Model?.Id" class="btn btn-warning">
+            <i class="bi bi-pencil-square me-1"></i> Düzenle
+        </a>|
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Geri Dön
+        </a>
+</div>
+</body>
+</html>

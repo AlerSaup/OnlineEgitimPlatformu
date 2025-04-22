@@ -1,0 +1,47 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Login Page</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>Hoşgeldiniz</h1>
+                <p>Lütfen Giriş Yapınız</p>
+                <label style="color:orangered"> @(TempData["mesaj"]) </label>
+            </div>
+
+            <form class="login-form"
+                  action="/login/index"
+                  method="post">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input name="username"
+                           type="email" class="form-control form-control-user"
+                           id="exampleInputEmail" aria-describedby="emailHelp"
+                           placeholder="E-Mail Adresinizi Giriniz">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input name="password"
+                           type="password" class="form-control form-control-user"
+                           id="exampleInputPassword" placeholder="Şifrenizi Giriniz">
+                </div>
+
+                <button type="submit" class="login-button">Giriş Yap</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

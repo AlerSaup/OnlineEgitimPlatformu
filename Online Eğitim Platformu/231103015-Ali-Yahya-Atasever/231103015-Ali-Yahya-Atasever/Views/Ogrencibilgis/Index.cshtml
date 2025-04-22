@@ -1,0 +1,71 @@
+﻿@model IEnumerable<_231103015_Ali_Yahya_Atasever.DAL.Ogrencibilgi>
+
+@{
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Öğrenci Bilgileri</title>
+</head>
+<body>
+    <p>
+        <a asp-action="Create" class="btn btn-success">
+            <i class="bi bi-plus-circle me-1"></i> Yeni Oluştur
+        </a>
+    </p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.OkulNo)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Ad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Soyad)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Bolum)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Sinif)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.OkulNo)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Ad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Soyad)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Bolum.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Sinif.Id)
+            </td>
+                    <td class="text-end">
+                        <div class="btn-group" role="group">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning me-2"><i class="bi bi-pencil-square"></i> Düzenle</a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info text-white me-2"><i class="bi bi-info-circle"></i> Detaylar</a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger"><i class="bi bi-trash"></i> Sil</a>
+                        </div>
+                    </td>
+        </tr>
+}
+    </tbody>
+</table>
+</body>
+</html>

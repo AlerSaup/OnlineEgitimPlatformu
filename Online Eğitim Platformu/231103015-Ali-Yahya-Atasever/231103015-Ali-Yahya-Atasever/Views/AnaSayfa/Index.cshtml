@@ -1,0 +1,138 @@
+﻿@model IEnumerable<_231103015_Ali_Yahya_Atasever.DAL.Video>
+@inject Microsoft.AspNetCore.Antiforgery.IAntiforgery Antiforgery
+
+@{
+    Layout = null;
+    ViewData["Title"] = "Videolar";
+    var categories = (ViewBag.Categories as List<_231103015_Ali_Yahya_Atasever.DAL.Category>) ?? new List<_231103015_Ali_Yahya_Atasever.DAL.Category>();
+    var ogrenciId = ViewBag.OgrenciId; // Controller’dan gelen öğrenci Id.
+    var student = ViewBag.Student; // Öğrenci bilgileri
+    var studentProgress = ViewBag.StudentProgress as Dictionary<int, int> ?? new Dictionary<int, int>();
+}
+
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/anasayfa.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/_231103015_Ali_Yahya_Atasever.styles.css" asp-append-version="true" />
+
+<!-- Sağ Üst Köşede Öğrenci Bilgilerini Gösteren Kısım -->
+@if (student != null)
+{
+    <div class="kullanicikarti">
+        <strong>@student.Ad @student.Soyad</strong>
+        <br />
+        <small>Okul No: @student.OkulNo</small>
+        @if (student.Bolum != null)
+        {
+            <small>@student.Bolum.BolumAdi</small>
+        }
+        <br />
+        @if (student.Sinif != null)
+        {
+            <small>@student.Sinif.Sinif1 . Sınıf</small>
+        }
+    </div>
+}
+
+<input type="hidden" id="ogrenciId" value="@ViewBag.OgrenciId" />
+<div class="container mt-4">
+    <h2>Yüklenen Videolar</h2>
+    <!-- Kategori seçimi için dropdown box -->
+    <div class="form-group">
+        <label for="categorySelect">Kategori Seçiniz:</label>
+        <select class="form-control" id="categorySelect">
+            <option value="">Tüm Kategoriler</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.Id">@cat.Name</option>
+            }
+        </select>
+    </div>
+
+    <hr />
+
+    <!-- Videoları kategori gruplarına ayırıyoruz -->
+    <div id="videoContainer">
+        @foreach (var cat in categories)
+        {
+            <div class="category-group" data-category="@cat.Id">
+                <h3>@cat.Name</h3>
+                <div class="row">
+                    @foreach (var item in Model.Where(v => v.CategoryId == cat.Id))
+                    {
+                        var savedProgress = studentProgress.ContainsKey(item.Id) ? studentProgress[item.Id] : 0;
+                        <div class="col-md-4 mb-3">
+                            <!-- Video elementine benzersiz id ekliyoruz -->
+                            <video id="video-@item.Id" width="100%" controls class="video-element">
+                                <source src="@Url.Content("~/video/" + item.Videolink)" type="video/mp4" />
+                                Tarayıcınız video etiketini desteklemiyor.
+                            </video>
+                            <p class="mt-1"><strong>@item.Videotitle</strong></p>
+                            <!-- İzlenme yüzdesi için alan: Data attribute ile kaydedilmiş ilerlemeyi saklıyoruz -->
+                            <p>
+                                İzlenme:
+                                <span id="progress-@item.Id" data-saved-progress="@savedProgress">
+                                    @savedProgress%
+                                </span>
+                            </p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    // Dropdown değişiminde kategori gruplarını filtreliyoruz
+    document.getElementById("categorySelect").addEventListener("change", function () {
+        var selected = this.value;
+        var groups = document.getElementsByClassName("category-group");
+        for (var i = 0; i < groups.length; i++) {
+            var groupCategory = groups[i].getAttribute("data-category");
+            groups[i].style.display = (selected === "" || groupCategory === selected) ? "" : "none";
+        }
+    });
+
+    // Tüm video elementlerine izlenme yüzdesi güncellemesi ekliyoruz
+    document.querySelectorAll('.video-element').forEach(function (video) {
+        video.addEventListener('timeupdate', function () {
+            var videoId = this.id.split('-')[1];
+            var progressSpan = document.getElementById('progress-' + videoId);
+            var savedProgress = parseInt(progressSpan.getAttribute('data-saved-progress')) || 0;
+
+            if (this.duration) {
+                var currentProgress = Math.floor((this.currentTime / this.duration) * 100);
+
+                // Sadece hesaplanan ilerleme, mevcut kayıttan yüksekse güncelle
+                if (currentProgress > savedProgress) {
+                    progressSpan.textContent = currentProgress + '%';
+                    progressSpan.setAttribute('data-saved-progress', currentProgress);
+
+                    var ogrencibilgiId = document.getElementById('ogrenciId').value;
+                    fetch('/AnaSayfa/UpdateIzlenme', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': '@Antiforgery.GetAndStoreTokens(Context).RequestToken'
+                        },
+                        body: JSON.stringify({
+                            videoId: parseInt(videoId),
+                            ogrencibilgiId: parseInt(ogrencibilgiId),
+                            izlenmemiktari: currentProgress
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (!data.success) {
+                                console.error("İzlenme güncelleme başarısız.");
+                            }
+                        })
+                        .catch(error => console.error("Error:", error));
+                } else {
+                    // Hesaplanan değer mevcut değerden düşükse ekranda veritabanındaki değeri gösteriyoruz.
+                    progressSpan.textContent = savedProgress + '%';
+                }
+            }
+        });
+    });
+</script>

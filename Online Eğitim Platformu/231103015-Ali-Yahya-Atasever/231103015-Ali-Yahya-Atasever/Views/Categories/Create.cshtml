@@ -1,0 +1,48 @@
+﻿@model _231103015_Ali_Yahya_Atasever.DAL.Category
+
+@{
+    Layout = "~/Views/Shared/AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Bölümler İçin Kategori Ekle</title>
+</head>
+<body>
+
+<h4>Kategori</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="BolumId" class="control-label"></label>
+                <select asp-for="BolumId" class ="form-control" asp-items="ViewBag.BolumId"></select>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+        <a asp-action="Index" class="btn btn-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Geri Dön
+        </a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+</body>
+</html>

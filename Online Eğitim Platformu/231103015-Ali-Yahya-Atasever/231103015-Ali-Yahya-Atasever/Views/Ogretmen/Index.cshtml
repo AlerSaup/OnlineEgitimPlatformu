@@ -1,0 +1,132 @@
+﻿@model IEnumerable<_231103015_Ali_Yahya_Atasever.DAL.Video>
+@{
+    Layout = null;
+    ViewData["Title"] = "Video Yükleme ve Öğrenci Bilgileri";
+    var categories = (ViewBag.Categories as List<_231103015_Ali_Yahya_Atasever.DAL.Category>) ?? new List<_231103015_Ali_Yahya_Atasever.DAL.Category>();
+    var izlenmeler = ViewBag.Izlenmeler as List<_231103015_Ali_Yahya_Atasever.DAL.Izlenme> ?? new List<_231103015_Ali_Yahya_Atasever.DAL.Izlenme>();
+    var ogrenciler = ViewBag.Ogrenciler as List<_231103015_Ali_Yahya_Atasever.DAL.Ogrencibilgi> ?? new List<_231103015_Ali_Yahya_Atasever.DAL.Ogrencibilgi>();
+}
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link rel="stylesheet" href="~/css/ogretmen.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/_231103015_Ali_Yahya_Atasever.styles.css" asp-append-version="true" />
+
+<h2>Video Yükle</h2>
+
+<form asp-action="Index" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="videoFile">Video Seçiniz:</label>
+        <input type="file" class="form-control" id="videoFile" name="videoFile" accept="video/*" />
+    </div>
+    <div class="form-group mt-2">
+        <label for="categoryId">Kategori Seçiniz:</label>
+        <select class="form-control" id="categoryId" name="categoryId">
+            @if (categories.Any())
+            {
+                foreach (var cat in categories)
+                {
+                    <option value="@cat.Id">@cat.Name</option>
+                }
+            }
+            else
+            {
+                <option disabled>Kategori bulunamadı.</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mt-2">
+        <label for="bolumId">Bölüm Seçiniz:</label>
+        <select class="form-control" id="bolumId" name="bolumId">
+            @foreach (var bolum in ViewBag.Bolumler as List<_231103015_Ali_Yahya_Atasever.DAL.Bolum>)
+            {
+                <option value="@bolum.Id">@bolum.BolumAdi</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mt-2">
+        <label for="sinifId">Sınıf Seçiniz:</label>
+        <select class="form-control" id="sinifId" name="sinifId">
+            @foreach (var sinif in ViewBag.Siniflar as List<_231103015_Ali_Yahya_Atasever.DAL.Sinif>)
+            {
+                <option value="@sinif.Id">@sinif.Sinif1</option>
+            }
+        </select>
+    </div>
+    <div class="form-group mt-2">
+        <label for="videotitle">Video Başlığı:</label>
+        <input type="text" class="form-control" id="videotitle" name="videotitle" placeholder="Video başlığı giriniz" />
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Yükle</button>
+</form>
+
+
+<hr />
+
+<div class="table-container">
+    <h2>Öğrenci Bilgileri (İzlenme Kayıtları)</h2>
+
+    <!-- Bölüm filtreleme dropdown'ı -->
+    <div class="form-group">
+        <label for="bolumFilter">Bölüme Göre Filtrele:</label>
+        <select id="bolumFilter" class="form-control">
+            <option value="">Tüm Bölümler</option>
+            @foreach (var bolum in izlenmeler
+            .Select(i => i.Ogrencibilgi?.Bolum?.BolumAdi)
+            .Where(b => !string.IsNullOrEmpty(b))
+            .Distinct())
+            {
+                <option value="@bolum">@bolum</option>
+            }
+        </select>
+    </div>
+
+    @if (ogrenciler.Any())
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Okul No</th>
+                    <th>Ad</th>
+                    <th>Soyad</th>
+                    <th>Bölüm</th>
+                    <th>Sınıf</th>
+                </tr>
+            </thead>
+            <tbody id="ogrenciTable">
+                @foreach (var ogr in ogrenciler)
+                {
+                    <tr data-bolum="@ogr.Bolum?.BolumAdi">
+                        <td>@ogr.OkulNo</td>
+                        <td>
+                            <a asp-action="StudentDetails" asp-route-studentId="@ogr.Id">
+                                @ogr.Ad
+                            </a>
+                        </td>
+                        <td>@ogr.Soyad</td>
+                        <td>@ogr.Bolum?.BolumAdi</td>
+                        <td>@ogr.Sinif?.Sinif1</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>Öğrenci bilgisi bulunamadı.</p>
+    }
+</div>
+
+<script>
+    // Bölüm filtreleme dropdown'ı değişiminde tablo satırlarını filtrele
+    document.getElementById("bolumFilter").addEventListener("change", function () {
+        var selectedBolum = this.value;
+        var rows = document.querySelectorAll("#ogrenciTable tr");
+        rows.forEach(function (row) {
+            var rowBolum = row.getAttribute("data-bolum");
+            if (selectedBolum === "" || rowBolum === selectedBolum) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>
